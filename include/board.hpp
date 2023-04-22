@@ -6,7 +6,7 @@
 //   By: archid <archid-@1337.student.ma>           +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2023/04/21 00:31:40 by archid            #+#    #+#             //
-//   Updated: 2023/04/22 00:29:42 by archid           ###   ########.fr       //
+//   Updated: 2023/04/22 02:42:57 by archid           ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -22,8 +22,8 @@ namespace ft
 		typedef std::vector<int>					tile_t;
 		typedef std::vector<board>				neighbours_t;
 
-		board() : depth_(0) {}
-		board(const board &rhs) : tiles_(rhs.tiles_), depth_(rhs.depth_) {}
+		board() : zero_(std::pair<int, int>(-1, -1)), depth_(0) {}
+		board(const board &rhs) : tiles_(rhs.tiles_), zero_(rhs.zero_), depth_(rhs.depth_) {}
 		board(const std::vector<tile_t> &tiles, int depth);
 
 		int dimension() const;
@@ -44,7 +44,7 @@ namespace ft
 
 	private:
 
-		board get_neighbour(bool updown, bool leftright) const;
+		board get_neighbour(int i, int j) const;
 
 		std::vector<tile_t> tiles_;
 		std::pair<int, int> zero_;

@@ -6,7 +6,7 @@
 //   By: archid <archid-@1337.student.ma>           +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2023/04/21 13:18:14 by archid            #+#    #+#             //
-//   Updated: 2023/04/22 01:22:50 by archid           ###   ########.fr       //
+//   Updated: 2023/04/22 13:57:29 by archid           ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -22,7 +22,7 @@
 namespace ft {
 
 	board::board(const std::vector<tile_t> &tiles, int depth)
-		: tiles_(tiles), depth_(depth)
+		: tiles_(tiles), zero_(std::pair<int, int>(-1, -1)), depth_(depth)
 	{
 		std::set<int> numbers;
 		for (int i = 0; i < dimension(); ++i) {
@@ -81,11 +81,11 @@ namespace ft {
 	}
 
 
-	board board::get_neighbour(bool updown, bool leftright) const
+	board board::get_neighbour(int i, int j) const
 	{
 		std::vector<tile_t> tiles = tiles_;
 		std::swap(tiles[zero_.first][zero_.second],
-							tiles[zero_.first + updown][zero_.second + leftright]);
+							tiles[zero_.first + i][zero_.second + j]);
 		return board(tiles, depth_ + 1);
 	}
 
@@ -94,47 +94,47 @@ namespace ft {
 		neighbours_t neighs;
 		neighs.reserve(4);
 
-		if (zero_.first + 1 < dimension()) {
-			if (zero_.second + 1 < dimension())
-				neighs.push_back(get_neighbour(true, true));
-			if (zero_.second - 1 < dimension())
-				neighs.push_back(get_neighbour(true, false));
-		}
-
-		if (zero_.first - 1 < dimension()) {
-			if (zero_.second + 1 < dimension())
-				neighs.push_back(get_neighbour(false, true));
-			if (zero_.second - 1 < dimension())
-				neighs.push_back(get_neighbour(false, false));
-		}
+		if (zero_.first + 1 < dimension())
+			neighs.push_back(get_neighbour(1, 0));
+		if (zero_.second + 1 < dimension())
+			neighs.push_back(get_neighbour(0, 1));
+		if (zero_.second - 1 < dimension())
+			neighs.push_back(get_neighbour(0, -1));
+		if (zero_.first - 1 < dimension())
+			neighs.push_back(get_neighbour(-1, 0));
 
 		return neighs;
 	}
 
 	bool board::solvable() const
 	{
-		// int inversions = 0;
-		// for (int i = 0; i < dimension(); ++i)
-		// 	for (int j = 0; j < dimension(); ++j)
-		// 		if (tiles_[i][j] != 0)
-		// 			for (int k = 0; k < )
-		// 			inversions += 1;
-		// std::cout << inversions << "\n";
-		// exit(1);
-		// return inversions % 2 == tiles_.size() % 2;
-		return false;
+		std::vector<int> vec;
+		for (unsigned i = 0; i < tiles_.size(); ++i)
+			vec.insert(vec.end(), tiles_[i].begin(), tiles_[i].end());
+
+		int inversions = 0;
+		for (unsigned i = 0; i < vec.size(); ++i)
+			for (unsigned j = i + 1; j < vec.size(); ++j)
+				if (vec[i] != 0 && vec[j] != 0)
+					inversions += (vec[i] > vec[j]);
+
+		return inversions % 2 != dimension() % 2;
 	}
 
 	void board::solve() const
 	{
+		exit(1);
 		std::vector<board> neighs = neighbours();
 		std::priority_queue<board> pq;
 		std::set<board> visited;
 
+		visited.insert(*this);
 		for (unsigned i = 0; i < neighs.size(); ++i) {
 			pq.push(neighs[i]);
 			visited.insert(neighs[i]);
 		}
+
+		exit(1);
 
 		std::size_t max_size = 0;
 		std::vector<board> sol;
@@ -192,7 +192,7 @@ namespace ft {
 			}
 			oss << '\n';
 		}
-		return oss << '\n';
+		return oss;
 	}
 
 }

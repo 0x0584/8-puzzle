@@ -6,7 +6,7 @@
 //   By: archid <archid-@1337.student.ma>           +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2023/04/21 00:36:27 by archid            #+#    #+#             //
-//   Updated: 2023/04/22 00:43:11 by archid           ###   ########.fr       //
+//   Updated: 2023/04/22 11:51:14 by archid           ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -68,10 +68,9 @@ int main(int argc, const char *argv[])
 	}
 
 	ft::board board(tiles, 0);
-	std::cout << board.solvable() << "\n";
 	if (board.solvable())
 		board.solve();
 	else
-		std::cerr << "Non solution to board:\n" << board<< '\n';
+		std::cerr << "Non solution to board:\n" << board;
 	return 0;
 }
