@@ -1,14 +1,14 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   main.cpp                                           :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: archid <archid-@1337.student.ma>           +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2023/04/21 00:36:27 by archid            #+#    #+#             //
-//   Updated: 2023/04/22 11:51:14 by archid           ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: archid- <archid-@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/04/21 00:36:27 by archid            #+#    #+#             */
+/*   Updated: 2023/04/26 12:07:54 by archid-          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 // ./n-puzzle file
 
@@ -53,11 +53,11 @@ int main(int argc, const char *argv[])
 		lines.push_back(std::string(buff));
 
 	int n = std::atoi(lines.front().c_str());
-	std::vector<ft::board::tile_t> tiles;
+	std::vector<std::vector<int> > tiles;
 	tiles.reserve(n);
 	for (int i = 0; i < n; ++i) {
-		ft::board::tile_t tile(n);
-		ft::board::tile_t::iterator it = tile.begin();
+		std::vector<int> tile(n);
+		std::vector<int>::iterator it = tile.begin();
 		while (it != tile.end()) {
 			*it++ = std::atoi(lines[i + 1].c_str());
 			std::size_t pos = lines[i + 1].find(' ');

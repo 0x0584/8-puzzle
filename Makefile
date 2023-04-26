@@ -7,7 +7,7 @@ CXXFLAGS = -Wall -g -Wextra -std=c++98  -Iinclude
 $(NAME) : $(OBJF) include/board.hpp
 		$(CXX) $(CXXFLAGS) $(OBJF) -o $(NAME)
 
-%.o: %.cpp
+%.o: %.cpp include/board.hpp
 		$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 all : $(NAME)

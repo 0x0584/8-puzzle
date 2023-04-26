@@ -6,7 +6,7 @@
 //   By: archid <archid-@1337.student.ma>           +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2023/04/21 13:18:14 by archid            #+#    #+#             //
-//   Updated: 2023/04/22 13:57:29 by archid           ###   ########.fr       //
+//   Updated: 2023/04/26 14:43:16 by archid           ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,13 +15,14 @@
 #include <vector>
 #include <numeric>
 #include <queue>
+#include <algorithm>
 
 #include "board.hpp"
 #include <assert.h>
 
 namespace ft {
 
-	board::board(const std::vector<tile_t> &tiles, int depth)
+	board::board(const std::vector< std::vector<int> > &tiles, int depth)
 		: tiles_(tiles), zero_(std::pair<int, int>(-1, -1)), depth_(depth)
 	{
 		std::set<int> numbers;
@@ -83,15 +84,15 @@ namespace ft {
 
 	board board::get_neighbour(int i, int j) const
 	{
-		std::vector<tile_t> tiles = tiles_;
+		std::vector< std::vector<int> > tiles = tiles_;
 		std::swap(tiles[zero_.first][zero_.second],
 							tiles[zero_.first + i][zero_.second + j]);
 		return board(tiles, depth_ + 1);
 	}
 
-	board::neighbours_t board::neighbours() const
+	std::vector<board> board::neighbours() const
 	{
-		neighbours_t neighs;
+		std::vector<board> neighs;
 		neighs.reserve(4);
 
 		if (zero_.first + 1 < dimension())
@@ -121,36 +122,97 @@ namespace ft {
 		return inversions % 2 != dimension() % 2;
 	}
 
+	bool binary_search(const std::vector<board> &v, board b)
+	{
+		int lo = 0, hi = v.size();
+		while (lo < hi) {
+			int mid = lo + (hi - lo) / 2;
+			if (v[mid] == b) {
+				return true;
+			}
+			else if (v[mid] < b)
+				lo = mid;
+			else
+				hi = mid;
+		}
+		return false;
+	}
+
+	void swap(board &a, board &b) {
+		board c = a;
+		a = b;
+		b = c;
+	}
+
+	std::vector<board> merge_impl(const std::vector<board> &v, int lo, int mid, int hi) {
+		std::vector<board> merged;
+
+		merged.reserve(hi - lo);
+		int i = lo, j = mid;
+		while (i < mid || j < hi) {
+			if (j >= hi || (i < mid && v[i] < v[j]))
+				merged.push_back(v[i++]);
+			if (i >= mid && (j < hi && v[j] < v[i]))
+				merged.push_back(v[j++]);
+		}
+		return merged;
+	}
+
+	std::vector<board> sort_impl(const std::vector<board> &v, int lo, int hi) {
+		if (hi - lo > 2) {
+			int mid = lo + (hi - lo) / 2;
+			std::vector<board> left = sort_impl(v, lo, mid),
+				right = sort_impl(v, mid, hi);
+			return merge_impl(v, lo, mid, hi);
+		}
+		std::vector<board> merged = std::vector<board>(v.begin() + lo, v.begin() + hi);
+		if (hi - lo > 1 && merged[lo] > merged[lo + 1]) {
+			ft::swap(merged[0], merged[1]);
+		}
+		return merged;
+	}
+
+	std::vector<board> merge_sort(const std::vector<board> &v) {
+		return sort_impl(v, 0, v.size());
+	}
+
 	void board::solve() const
 	{
-		exit(1);
 		std::vector<board> neighs = neighbours();
 		std::priority_queue<board> pq;
-		std::set<board> visited;
+		std::vector<board> visited;
 
-		visited.insert(*this);
-		for (unsigned i = 0; i < neighs.size(); ++i) {
+		for (unsigned i = 0; i < neighs.size(); ++i)
 			pq.push(neighs[i]);
-			visited.insert(neighs[i]);
-		}
-
-		exit(1);
 
 		std::size_t max_size = 0;
 		std::vector<board> sol;
+		visited.push_back(*this);
 		while (not pq.empty()) {
 			board b = pq.top();
 			pq.pop();
 
+			std::cout << "current: \n" << b << "\n";
 			sol.push_back(b);
 			if (b.snail())
 				break;
+			else
+				visited.push_back(b);
+
+
+			//merge_sort(visited);
+			std::sort(visited.begin(), visited.end());
 
 			neighs = b.neighbours();
+			std::cout << "branch:\n";
 			for (unsigned i = 0; i < neighs.size(); ++i) {
-				if (visited.insert(neighs[i]).second)
+				if (not binary_search(visited, neighs[i])) {
+					std::cout << "considering\n" << neighs[i];
 					pq.push(neighs[i]);
+				}
+				// std::cout << "\n";
 			}
+			std::cout << std::endl;
 
 			max_size = std::max(max_size, pq.size());
 		}
@@ -163,7 +225,7 @@ namespace ft {
 			std::cout << "step: " << i << "\n" << sol[i] << "\n\n";
 	}
 
-	board &board::operator=(const board &rhs)
+	board &board::operator=(board &rhs)
 	{
 		tiles_ = rhs.tiles_;
 		return *this;
@@ -181,7 +243,14 @@ namespace ft {
 
 	bool board::operator<(const board &rhs) const
 	{
+		//		std::cerr << "cmp:\n" << *this << "\n" << rhs << "\n";
 		return manhattan() < rhs.manhattan();
+	}
+
+	bool board::operator>(const board &rhs) const
+	{
+		//		std::cerr << "cmp:\n" << *this << "\n" << rhs << "\n";
+		return manhattan() > rhs.manhattan();
 	}
 
 	std::ostream &operator<<(std::ostream &oss, const board &b)
