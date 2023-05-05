@@ -1,4 +1,4 @@
-SRC = src/main.cpp src/board.cpp
+SRC = src/main.cpp src/board.cpp src/solver.cpp src/cost.cpp
 OBJF = $(SRC:.cpp=.o)
 NAME = n-puzzle
 CXX = clang++

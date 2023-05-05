@@ -6,7 +6,7 @@
 //   By: archid <archid-@1337.student.ma>           +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2023/04/21 00:31:40 by archid            #+#    #+#             //
-//   Updated: 2023/04/25 23:49:25 by archid           ###   ########.fr       //
+//   Updated: 2023/05/04 02:18:38 by archid           ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -14,6 +14,8 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+#include <assert.h>
 
 namespace ft
 {
@@ -28,12 +30,14 @@ namespace ft
 		std::vector<board> neighbours() const;
 		bool solvable() const;
 		void solve() const;
-		board twin();
+		bool nil() const;
+		int depth() const { return depth_; }
+
 
 		int hamming() const; // number of tiles out of place
 		int manhattan() const; // sum of Manhattan distances between tiles and goal
 
-		board &operator=(board &rhs);
+		board &operator=(const board &rhs);
 		bool operator==(const board &rhs) const;
 		bool operator!=(const board &rhs) const;
 		bool operator<(const board &rhs) const;
@@ -42,11 +46,15 @@ namespace ft
 
 	private:
 
+		int calc_hamming() const; // number of tiles out of place
+		int calc_manhattan() const; // sum of Manhattan distances between tiles and goal
+
 		board get_neighbour(int i, int j) const;
 
 		std::vector< std::vector<int> > tiles_;
 		std::pair<int, int> zero_;
 		int depth_;
+		int manh_, ham_;
 	};
 
 	bool binary_search(const std::vector<board> &, board);

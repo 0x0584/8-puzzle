@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: archid- <archid-@student.42.fr>            +#+  +:+       +#+        */
+/*   By: archid <archid-@student.1337.ma>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:36:27 by archid            #+#    #+#             */
-/*   Updated: 2023/04/26 12:07:54 by archid-          ###   ########.fr       */
+//   Updated: 2023/05/04 13:45:27 by archid           ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,11 @@
 
 #define BUFF_SIZE 128
 
-int main(int argc, const char *argv[])
-{
+std::vector<std::vector<int > > parse_puzzle(int argc, const char *argv[], int index=1) {
 	if (argc != 2)
 		exit(1);
 
-	int fd = open(argv[1], O_RDONLY);
+	int fd = open(argv[index], O_RDONLY);
 	if (fd < 0)
 		exit(1);
 	std::vector<std::string> lines;
@@ -67,10 +66,34 @@ int main(int argc, const char *argv[])
 		tiles.push_back(tile);
 	}
 
-	ft::board board(tiles, 0);
-	if (board.solvable())
-		board.solve();
-	else
-		std::cerr << "Non solution to board:\n" << board;
-	return 0;
+	return tiles;
+}
+
+int main(int argc, const char *argv[])
+{
+	ft::board boards[64];
+	for (int i = 1; i < argc; ++i) {
+			std::vector<std::vector<int > > tile = parse_puzzle(argc, argv, i);
+			boards[i-1] = ft::board(tile, 1);
+	}
+
+	for (int i = 1; i < argc; ++i) {
+		std::cout << boards[i] << "\n";
+		std::cout << boards[i].hamming() << '\n';
+		std::cout << boards[i].manhattan() << '\n';
+	}
+
+	exit(1);
+	/*
+	try {
+		ft::board board(tiles, 1);
+		assert(board == board);
+		if (board.solvable())
+			board.solve();
+		else
+			std::cerr << "Non solution to board:\n" << board;
+	} catch (const std::runtime_error &e) {
+		std::cerr << e.what() << '\n';
+	}
+	return 0;*/
 }
